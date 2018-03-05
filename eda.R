@@ -45,3 +45,6 @@ ggplot(data = all[!is.na(all$SalePrice), ], aes(x = GrLivArea, y = SalePrice)) +
 
 # Get the 2 houses with large living areas and low sale price. Make sure to get the right ones since there are 3 houses close to 4500 square feet
 head(all[order(all$GrLivArea[!is.na(all$SalePrice)], decreasing = TRUE), c("SalePrice", "GrLivArea", "OverallQual")], 3)
+# Get the features containing missing values
+NAcol <- which(colSums(is.na(all)) > 0)
+sort(colSums(sapply(all[NAcol], is.na)), decreasing = TRUE)
