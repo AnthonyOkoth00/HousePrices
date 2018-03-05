@@ -42,3 +42,6 @@ ggplot(data = all[!is.na(all$SalePrice), ], aes(x = factor(OverallQual), y = Sal
 # Second highest correlation between Grade (Ground) Living Area (square feet) and the Sale Price
 ggplot(data = all[!is.na(all$SalePrice), ], aes(x = GrLivArea, y = SalePrice)) + geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
   + scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
+
+# Get the 2 houses with large living areas and low sale price. Make sure to get the right ones since there are 3 houses close to 4500 square feet
+head(all[order(all$GrLivArea[!is.na(all$SalePrice)], decreasing = TRUE), c("SalePrice", "GrLivArea", "OverallQual")], 3)
