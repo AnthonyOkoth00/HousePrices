@@ -76,3 +76,73 @@ ggplot(all[!is.na(all$SalePrice), ], aes(x = Alley, y = SalePrice)) +
   geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
   scale_y_continuous(breaks = seq(0, 200000, by = 50000), labels = comma)
 table(all$Alley)
+
+# Clean Fence Quality feature
+all$Fence[is.na(all$Fence)] <- "None"
+table(all$Fence)
+all$Fence <- as.factor(all$Fence)
+
+# Clean Fireplace Quality feature
+all$FireplaceQu[is.na(all$FireplaceQu)] <- "None"
+all$FireplaceQu <- as.integer(revalue(all$FireplaceQu, Qualities))
+table(all$FireplaceQu)
+# Number of fireplaces
+table(all$Fireplaces)
+sum(table(all$Fireplaces))
+
+# Clean Lot feature
+ggplot(all[!is.na(all$LotFrontage), ], aes(x = as.factor(Neighborhood), y = LotFrontage)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+for (i in 1:nrow(all)) {
+  if (is.na(all$LotFrontage[i])) { 
+    all$LotFrontage[i] <- as.integer(median(all$LotFrontage[all$Neighborhood == all$Neighborhood[i]], na.rm = TRUE))
+  }
+}
+#LotShape: No NA's. Values seem ordinal
+all$LotShape <- as.integer(revalue(all$LotShape, c("IR3" = 0, "IR2" = 1, "IR1" = 2, "Reg" = 3)))
+table(all$LotShape)
+sum(table(all$LotShape))
+# Lot configuration: Values seemed ordinal but visualization showed otherwise. Convert into a factor
+ggplot(all[!is.na(all$SalePrice), ], aes(x = as.factor(LotConfig), y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..))
+all$LotConfig <- as.factor(all$LotConfig)
+table(all$LotConfig)
+sum(table(all$LotConfig))
+##Garage
+all$GarageYrBlt[is.na(all$GarageYrBlt)] <- all$YearBuilt[is.na(all$GarageYrBlt)]
+#check if all 157 NAs are the same observations among the variables with 157/159 NAs
+length(which(is.na(all$GarageType) & is.na(all$GarageFinish) & is.na(all$GarageCond) & is.na(all$GarageQual)))
+#find the 2 additional NA's
+kable(all[!is.na(all$GarageType) & is.na(all$GarageFinish), c("GarageCars", "GarageArea", "GarageType", "GarageCond", "GarageQual", "GarageFinish")])
+#Imputing modes.
+all$GarageCond[2127] <- names(sort(-table(all$GarageCond)))[1]
+all$GarageQual[2127] <- names(sort(-table(all$GarageQual)))[1]
+all$GarageFinish[2127] <- names(sort(-table(all$GarageFinish)))[1]
+#display "fixed" house
+kable(all[2127, c("GarageYrBlt", "GarageCars", "GarageArea", "GarageType", "GarageCond", "GarageQual", "GarageFinish")])
+#fixing 3 values for house 2577
+all$GarageCars[2577] <- 0
+all$GarageArea[2577] <- 0
+all$GarageType[2577] <- NA
+#check if NA's of the character variables are now all 158
+length(which(is.na(all$GarageType) & is.na(all$GarageFinish) & is.na(all$GarageCond) & is.na(all$GarageQual)))
+# GarageType: Does not seem ordinal so to be converted into factor
+all$GarageType[is.na(all$GarageType)] <- "No Garage"
+all$GarageType <- as.factor(all$GarageType)
+table(all$GarageType)
+# GarageFinish: Ordinal values
+all$GarageFinish[is.na(all$GarageFinish)] <- "None"
+Finish <- c("None" = 0, "Unf" = 1, "RFn" = 2, "Fin" = 3)
+all$GarageFinish <- as.integer(revalue(all$GarageFinish, Finish))
+table(all$GarageFinish)
+# GarageQual: Ordinal
+all$GarageQual[is.na(all$GarageQual)] <- "None"
+all$GarageQual <- as.integer(revalue(all$GarageQual, Qualities))
+table(all$GarageQual)
+#GarageCond: Can be made ordinal with the "Qualitites" vector
+all$GarageCond[is.na(all$GarageCond)] <- "None"
+all$GarageCond <- as.integer(revalue(all$GarageCond, Qualities))
+table(all$GarageCond)
