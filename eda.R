@@ -146,3 +146,44 @@ table(all$GarageQual)
 all$GarageCond[is.na(all$GarageCond)] <- "None"
 all$GarageCond <- as.integer(revalue(all$GarageCond, Qualities))
 table(all$GarageCond)
+## Basement variables
+#check if all 79 NAs are the same observations among the variables with 80+ NAs
+length(which(is.na(all$BsmtQual) & is.na(all$BsmtCond) & is.na(all$BsmtExposure) & is.na(all$BsmtFinType1) & is.na(all$BsmtFinType2)))
+#Find the additional NAs; BsmtFinType1 is the one with 79 NAs
+all[!is.na(all$BsmtFinType1) & (is.na(all$BsmtCond) | is.na(all$BsmtQual) | is.na(all$BsmtExposure) | is.na(all$BsmtFinType2)), c("BsmtQual", "BsmtCond", "BsmtExposure", "BsmtFinType1", "BsmtFinType2")]
+#imputing modes
+all$BsmtFinType2[333] <- names(sort(-table(all$BsmtFinType2)))[1]
+all$BsmtExposure[c(949, 1488, 2349)] <- names(sort(-table(all$BsmtExposure)))[1]
+all$BsmtCond[c(2041, 2186, 2525)] <- names(sort(-table(all$BsmtCond)))[1]
+all$BsmtQual[c(2218, 2219)] <- names(sort(-table(all$BsmtQual)))[1]
+# Make BsmtQual ordinal with Qualities vector
+all$BsmtQual[is.na(all$BsmtQual)] <- "None"
+all$BsmtQual <- as.integer(revalue(all$BsmtQual, Qualities))
+table(all$BsmtQual)
+# Make BsmtCond ordinal with Qualities vector
+all$BsmtCond[is.na(all$BsmtCond)] <- "None"
+all$BsmtCond <- as.integer(revalue(all$BsmtCond, Qualities))
+table(all$BsmtCond)
+#Make BsmtExposure ordinal
+all$BsmtExposure[is.na(all$BsmtExposure)] <- "None"
+Exposure <- c("None" = 0, "No" = 1, "Mn" = 2, "Av" = 3, "Gd" = 4)
+all$BsmtExposure <- as.integer(revalue(all$BsmtExposure, Exposure))
+table(all$BsmtExposure)
+# BsmtFinType1: Can be made ordinal
+all$BsmtFinType1[is.na(all$BsmtFinType1)] <- "None"
+FinType <- c("None" = 0, "Unf" = 1, "LwQ" = 2, "Rec" = 3, "BLQ" = 4, "ALQ" = 5, "GLQ" = 6)
+all$BsmtFinType1 <- as.integer(revalue(all$BsmtFinType1, FinType))
+table(all$BsmtFinType1)
+#display remaining NAs. Using BsmtQual as a reference for the 79 houses without basement agreed upon earlier
+all[(is.na(all$BsmtFullBath)|is.na(all$BsmtHalfBath)|is.na(all$BsmtFinSF1)|is.na(all$BsmtFinSF2)|is.na(all$BsmtUnfSF)|is.na(all$TotalBsmtSF)), c('BsmtQual', 'BsmtFullBath', 'BsmtHalfBath', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF', 'TotalBsmtSF')]
+# BmstFullBatch: An integer variable
+all$BsmtFullBath[is.na(all$BsmtFullBath)] <- 0
+table(all$BsmtFullBath)
+# BsmtHalfBath: Integer variable
+all$BsmtHalfBath[is.na(all$BsmtHalfBath)] <- 0
+table(all$BsmtHalfBath)
+# BsmtFinSF2: also integer variable
+all$BsmtFinSF1[is.na(all$BsmtFinSF1)] <- 0
+all$BsmtFinSF2[is.na(all$BsmtFinSF2)] <- 0
+all$BsmtUnfSF[is.na(all$BsmtUnfSF)] <- 0
+all$TotalBsmtSF[is.na(all$TotalBsmtSF)] <- 0
