@@ -61,6 +61,7 @@ all[all$PoolArea > 0 & all$PoolQC == 0, c("PoolArea", "PoolQC", "OverallQual")]
 all$PoolQC[2421] <- 2
 all$PoolQC[2505] <- 3
 all$PoolQC[2600] <- 2
+# Clean MiscFeature
 all$MiscFeature[is.na(all$MiscFeature)] <- "None"
 all$MiscFeature <- as.factor(all$MiscFeature)
 ggplot(all[!is.na(all$SalePrice), ], aes(x = MiscFeature, y = SalePrice)) +
@@ -68,3 +69,10 @@ ggplot(all[!is.na(all$SalePrice), ], aes(x = MiscFeature, y = SalePrice)) +
   scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma) +
   geom_label(stat = "count", aes(label = ..count.., y = ..count..))
 table(all$MiscFeature)
+#Clean Alley Feature
+all$Alley[is.na(all$Alley)] <- "None"
+all$Alley <- as.factor(all$Alley)
+ggplot(all[!is.na(all$SalePrice), ], aes(x = Alley, y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  scale_y_continuous(breaks = seq(0, 200000, by = 50000), labels = comma)
+table(all$Alley)
