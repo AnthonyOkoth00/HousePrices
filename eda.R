@@ -48,3 +48,23 @@ head(all[order(all$GrLivArea[!is.na(all$SalePrice)], decreasing = TRUE), c("Sale
 # Get the features containing missing values
 NAcol <- which(colSums(is.na(all)) > 0)
 sort(colSums(sapply(all[NAcol], is.na)), decreasing = TRUE)
+cat("There are", length(NAcol), "columns with missing values")
+# Assign "None" to NA's in the PoolQC feature
+all$PoolQC[is.na(all$PoolQC)] <- "None"
+#Label encode the values in this variable
+Qualities <- c("None" = 0, "Po" = 1, "Fa" = 2, "TA" = 3, "Gd" = 4, "Ex" = 5 )
+all$PoolQC <- as.integer(revalue(all$PoolQC, Qualities))
+table(all$PoolQC)
+# Display observations with PoolArea > 0 and PoolQC == 0
+all[all$PoolArea > 0 & all$PoolQC == 0, c("PoolArea", "PoolQC", "OverallQual")]
+# Replace PoolQC == 0 with overal quality of the houses.
+all$PoolQC[2421] <- 2
+all$PoolQC[2505] <- 3
+all$PoolQC[2600] <- 2
+all$MiscFeature[is.na(all$MiscFeature)] <- "None"
+all$MiscFeature <- as.factor(all$MiscFeature)
+ggplot(all[!is.na(all$SalePrice), ], aes(x = MiscFeature, y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") + 
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..))
+table(all$MiscFeature)
