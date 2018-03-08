@@ -250,3 +250,108 @@ sum(table(all$SaleType))
 all$SaleCondition <- as.factor(all$SaleCondition)
 table(all$SaleCondition)
 sum(table(all$SaleCondition))
+####Label encoding/factorizing the remaining character variables####
+Charcol <- names(all[, sapply(all, is.character)])
+cat("There are", length(Charcol), "remaining columns with character values.")
+#Foundation: Type of foundation
+#No ordinality, so converting into factors
+all$Foundation <- as.factor(all$Foundation)
+table(all$Foundation)
+sum(table(all$Foundation))
+#Heating: Type of heating
+#There are 2 heating variables, and one that indicates Airco Yes/No.
+#No ordinality, so converting into factors
+table(all$Heating)
+sum(table(all$Heating))
+#making the variable ordinal using the Qualities vector
+all$HeatingQC <- as.integer(revalue(all$HeatingQC, Qualities))
+table(all$HeatingQC)
+sum(table(all$HeatingQC))
+#CentralAir: Central air conditioning
+all$CentralAir <- as.integer(revalue(all$CentralAir, c("N" = 0, "Y" = 1)))
+table(all$CentralAir)
+sum(table(all$CentralAir))
+#RoofStyle: Type of roof
+#There are 2 variables that deal with the roof of houses.
+#No ordinality, so converting into factors
+all$RoofStyle <- as.factor(all$RoofStyle)
+table(all$RoofStyle)
+sum(table(all$RoofStyle))
+#RoofMatl: Roof material
+##No ordinality, so converting into factors
+all$RoofMatl <- as.factor(all$RoofMatl)
+table(all$RoofMatl)
+sum(table(all$RoofMatl))
+##2 variables that specify the flatness and slope of the propoerty.
+#LandContour: Flatness of the property
+##No ordinality, so converting into factors
+all$LandContour <- as.factor(all$LandContour)
+table(all$LandContour)
+sum(table(all$LandContour))
+#LandSlope: Slope of property
+##Ordinal, so label encoding
+all$LandSlope <- as.integer(revalue(all$LandSlope, c("Sev" = 0, "Mod" = 1, "Gtl" = 2)))
+table(all$LandSlope)
+sum(table(all$LandSlope))
+#2 variables that specify the type and style of dwelling.
+#BldgType: Type of dwelling
+# Seems ordinal. Check for ordinality with a visualization
+ggplot(all[!is.na(all$SalePrice), ], aes(x = as.factor(BldgType), y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill ="blue") +
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..))
+#However, the visualization does not show ordinality.
+#converting to factors
+all$BldgType <- as.factor(all$BldgType)
+table(all$BldgType)
+sum(table(all$BldgType))
+#HouseStyle: Style of dwelling
+#No ordinality, so converting into factors
+all$HouseStyle <- as.factor(all$HouseStyle)
+table(all$HouseStyle)
+sum(table(all$HouseStyle))
+#No ordinality, so converting into factors
+all$Neighborhood <- as.factor(all$Neighborhood)
+table(all$Neighborhood)
+sum(table(all$Neighborhood))
+all$Condition1 <- as.factor(all$Condition1)
+table(all$Condition1)
+sum(table(all$Condition1))
+all$Condition2 <- as.factor(all$Condition2)
+table(all$Condition2)
+sum(table(all$Condition2))
+all$Street<-as.integer(revalue(all$Street, c('Grvl'=0, 'Pave'=1)))
+table(all$Street)
+#sum(table(all$Street))
+all$PavedDrive<-as.integer(revalue(all$PavedDrive, c('N'=0, 'P'=1, 'Y'=2)))
+table(all$PavedDrive)
+sum(table(all$PavedDrive))
+str(all$YrSold)
+str(all$MoSold)
+all$MoSold <- as.factor(all$MoSold)
+ys <- ggplot(all[!is.na(all$SalePrice), ], aes(x = as.factor(YrSold), y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  scale_y_continuous(breaks = seq(0, 800000, by = 25000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..)) +
+  coord_cartesian(ylim = c(0, 200000)) +
+  geom_hline(yintercept = 163000, linetype = "dashed", color = "red") #dashed line is median Sale Price
+ms <- ggplot(all[!is.na(all$SalePrice), ], aes(x = MoSold, y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  scale_y_continuous(breaks = seq(0, 800000, by = 25000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..)) +
+  coord_cartesian(ylim = c(0, 200000)) +
+  geom_hline(yintercept = 163000, linetype = "dashed", color = "red") #dahsed line is median sale price
+grid.arrange(ys, ms, widths = c(1, 2))
+str(all$MSSubClass)
+all$MSSubClass <- as.factor(all$MSSubClass)
+all$MSSubClass <- revalue(all$MSSubClass, c('20'='1 story 1946+', '30'='1 story 1945-', '40'='1 story unf attic', '45'='1,5 story unf', '50'='1,5 story fin', '60'='2 story 1946+', '70'='2 story 1945-', '75'='2,5 story all ages', '80'='split/multi level', '85'='split foyer', '90'='duplex all style/age', '120'='1 story PUD 1946+', '150'='1,5 story PUD all', '160'='2 story PUD 1946+', '180'='PUD multilevel', '190'='2 family conversion'))
+str(all$MSSubClass)
+numericVars <- which(sapply(all, is.numeric))  #index vector numeric variables
+factorVars <- which(sapply(all, is.factor)) #index vector factor variables
+cat("There are", length(numericVars), "numeric variables, and", length(factorVars), "categoric variables.")
+all_numVar <- all[, numericVars]
+cor_numVar <- cor(all_numVar, use = "pairwise.complete.obs") #correlations of all numeric variables
+cor_sorted <- as.matrix(sort(cor_numVar[, "SalePrice"], decreasing = TRUE))
+CorHigh <- names(which(apply(cor_sorted, 1, function(x) abs(x) > 0.5)))
+cor_numVar <- cor_numVar[CorHigh, CorHigh]
+corrplot.mixed(cor_numVar, tl.col = "black", tl.pos = "lt", tl.cex = 0.7, cl.cex = .7, number.cex = .7)
