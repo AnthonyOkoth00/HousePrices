@@ -187,3 +187,66 @@ all$BsmtFinSF1[is.na(all$BsmtFinSF1)] <- 0
 all$BsmtFinSF2[is.na(all$BsmtFinSF2)] <- 0
 all$BsmtUnfSF[is.na(all$BsmtUnfSF)] <- 0
 all$TotalBsmtSF[is.na(all$TotalBsmtSF)] <- 0
+#Masonry veneer type, and masonry veneer area
+#check if the 23 houses with veneer area NA are also NA in the veneer type
+length(which(is.na(all$MasVnrType) & is.na(all$MasVnrArea)))
+#find the one that should have a MasVnrType
+all[is.na(all$MasVnrType) & !is.na(all$MasVnrArea), c("MasVnrType", "MasVnrArea")]
+#fix this veneer type by imputing the mode
+all$MasVnrType[2611] <- names(sort(-table(all$MasVnrType)))[2] # taking the 2nd value because the 1st is "none"
+all[2611, c("MasVnrType", "MasVnrArea")]
+#Masonry veneer type
+all$MasVnrType[is.na(all$MasVnrType)] <- "None"
+all[!is.na(all$SalePrice), ] %>% group_by(MasVnrType) %>% dplyr::summarise(median = median(SalePrice), counts = n()) %>% arrange(median)
+Masonry <- c("None" = 0, "BrkCmn" = 0, "BrkFace" = 1, "Stone" = 2)
+table(all$MasVnrType)
+all$MasVnrType <- as.integer(revalue(all$MasVnrType, Masonry))
+table(all$MasVnrType)
+#MasVnrArea: Masonry veneer area in square feet
+all$MasVnrArea[is.na(all$MasVnrArea)] <- 0
+#imputing the mode
+all$MSZoning[is.na(all$MSZoning)] <- names(sort(-table(all$MSZoning)))[1]
+all$MSZoning <- as.factor(all$MSZoning)
+table(all$MSZoning)
+sum(table(all$MSZoning))
+all$KitchenQual[is.na(all$KitchenQual)] <- 'TA' #replace with most common value
+all$KitchenQual<-as.integer(revalue(all$KitchenQual, Qualities))
+table(all$KitchenQual)
+sum(table(all$KitchenQual))
+table(all$KitchenAbvGr)
+kable(all[is.na(all$Utilities) | all$Utilities=='NoSeWa', 1:9])
+all$Utilities <- NULL
+#impute mode for the 1 NA
+all$Functional[is.na(all$Functional)] <- names(sort(-table(all$Functional)))[1]
+all$Functional <- as.integer(revalue(all$Functional, c('Sal'=0, 'Sev'=1, 'Maj2'=2, 'Maj1'=3, 'Mod'=4, 'Min2'=5, 'Min1'=6, 'Typ'=7)))
+table(all$Functional)
+sum(table(all$Functional))
+#imputing mode
+all$Exterior1st[is.na(all$Exterior1st)] <- names(sort(-table(all$Exterior1st)))[1]
+all$Exterior1st <- as.factor(all$Exterior1st)
+table(all$Exterior1st)
+sum(table(all$Exterior1st))
+#imputing mode
+all$Exterior2nd[is.na(all$Exterior2nd)] <- names(sort(-table(all$Exterior2nd)))[1]
+all$Exterior2nd <- as.factor(all$Exterior2nd)
+table(all$Exterior2nd)
+sum(table(all$Exterior2nd))
+all$ExterQual<-as.integer(revalue(all$ExterQual, Qualities))
+table(all$ExterQual)
+sum(table(all$ExterQual))
+all$ExterCond<-as.integer(revalue(all$ExterCond, Qualities))
+table(all$ExterCond)
+sum(table(all$ExterCond))
+#imputing mode
+all$Electrical[is.na(all$Electrical)] <- names(sort(-table(all$Electrical)))[1]
+all$Electrical <- as.factor(all$Electrical)
+table(all$Electrical)
+sum(table(all$Electrical))
+#imputing mode
+all$SaleType[is.na(all$SaleType)] <- names(sort(-table(all$SaleType)))[1]
+all$SaleType <- as.factor(all$SaleType)
+table(all$SaleType)
+sum(table(all$SaleType))
+all$SaleCondition <- as.factor(all$SaleCondition)
+table(all$SaleCondition)
+sum(table(all$SaleCondition))
