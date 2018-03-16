@@ -458,3 +458,11 @@ b8 <- ggplot(data=all, aes(x=as.factor(BsmtExposure))) +
   geom_histogram(stat='count')+ labs(x='Walkout or garden level walls')
 layout <- matrix(c(1,2,3,4,5,9,6,7,8),3,3,byrow=TRUE)
 multiplot(b1, b2, b3, b4, b5, b6, b7, b8, layout=layout)
+###7 Feature engineering
+##7.1 Total number of Bathrooms
+all$TotBathrooms <- all$FullBath + (all$HalfBath * 0.5) + all$BsmtFullBath + (all$BsmtHalfBath * 0.5)
+tb1 <- ggplot(data = all[!is.na(all$SalePrice), ], aes(x = as.factor(TotBathrooms), y = SalePrice)) +
+  geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
+tb2 <- ggplot(data = all, aes(x = as.factor(TotBathrooms))) + geom_histogram(stat = "count")
+grid.arrange(tb1, tb2)
