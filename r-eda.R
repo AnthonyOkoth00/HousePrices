@@ -477,3 +477,17 @@ ggplot(data = all[!is.na(all$SalePrice), ], aes(x = ExterMat, y = SalePrice)) +
   geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
   scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
 cor(all$SalePrice[!is.na(all$SalePrice)], all$ExterMat[!is.na(all$SalePrice)])
+##7.4 Adding ‘House Age’ and ‘Remodeled (Yes/No)’ variables
+all$Remod <- ifelse(all$YearBuilt == all$YearRemodAdd, 0, 1) #0 = no remodelling, 1 = remodelling
+all$Age <- as.numeric(all$YrSold) - all$YearRemodAdd
+ggplot(data = all[!is.na(all$SalePrice), ], aes(x = Age, y = SalePrice)) +
+  geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
+cor(all$SalePrice[!is.na(all$SalePrice)], all$Age[!is.na(all$SalePrice)])
+ggplot(all[!is.na(all$SalePrice), ], aes(x = as.factor(Remod), y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 6) +
+  scale_y_continuous(breaks = seq(0, 800000, by = 50000), labels = comma) +
+  theme_grey(base_size = 18) +
+  geom_hline(yintercept = 163000, linetype = "dashed") #dashed line is a median sale price
+all$YrSold <- as.factor(all$YrSold) #the numeric version is now not needed anymore
