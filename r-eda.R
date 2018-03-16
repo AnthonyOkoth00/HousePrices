@@ -466,3 +466,8 @@ tb1 <- ggplot(data = all[!is.na(all$SalePrice), ], aes(x = as.factor(TotBathroom
   scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
 tb2 <- ggplot(data = all, aes(x = as.factor(TotBathrooms))) + geom_histogram(stat = "count")
 grid.arrange(tb1, tb2)
+##7.2 Consolidating Porch variables
+all$TotalPorchSF <- all$OpenPorchSF + all$EnclosedPorch + all$X3SsnPorch + all$ScreenPorch
+por1 <- ggplot(data = all, aes(x = TotalPorchSF)) + geom_histogram() + labs(x = "Total Porch square feet")
+por2 <- ggplot(data = all, aes(x = WoodDeckSF)) + geom_histogram() + labs(x = "Wood Deck square feet")
+grid.arrange(por1, por2, nrow = 1)
