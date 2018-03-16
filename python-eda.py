@@ -62,10 +62,25 @@ cols = corrmat.nlargest(k, "SalePrice")["SalePrice"].index
 cm = np.corrcoef(df_train[cols].values.T)
 #sns.set(font_scale= 1.25)
 #hm = sns.heatmap(cm, cbar= True, annot= True, square= True, fmt= ".2f", annot_kws= {"size": 10},
-                 yticklabels= cols.values, xticklabels= cols.values)
+                 #yticklabels= cols.values, xticklabels= cols.values)
 
 #scatterplot
 sns.set()
-cols = ["SalePrice", "OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "FullBath", "YearBuilt"]
-sns.pairplot(df_train[cols], size= 2.5)
-plt.show()
+#cols = ["SalePrice", "OverallQual", "GrLivArea", "GarageCars", "TotalBsmtSF", "FullBath", "YearBuilt"]
+#sns.pairplot(df_train[cols], size= 2.5)
+
+#missing data
+total = df_train.isnull().sum().sort_values(ascending=False)
+percent = (df_train.isnull().sum()/df_train.isnull().count()).sort_values(ascending=False)
+missing_data = pd.concat([total, percent], axis = 1, keys = ["Total", "Percent"])
+print "Show missing data"
+print missing_data.head(20)
+
+#plt.show()
+
+print "------------------------------------------------"
+print "After removing missing data"
+#dealing with missing data
+df_train = df_train.drop((missing_data[missing_data["Total"] > 1]).index, 1)
+df_train = df_train.drop(df_train.loc[df_train["Electrical"].isnull()].index)
+print df_train.isnull().sum().max() #just checking that there's no missing data ...
