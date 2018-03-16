@@ -471,3 +471,9 @@ all$TotalPorchSF <- all$OpenPorchSF + all$EnclosedPorch + all$X3SsnPorch + all$S
 por1 <- ggplot(data = all, aes(x = TotalPorchSF)) + geom_histogram() + labs(x = "Total Porch square feet")
 por2 <- ggplot(data = all, aes(x = WoodDeckSF)) + geom_histogram() + labs(x = "Wood Deck square feet")
 grid.arrange(por1, por2, nrow = 1)
+##7.3 Consolidating Quality and Condition of External Materials
+all$ExterMat <- all$ExterCond + all$ExterQual
+ggplot(data = all[!is.na(all$SalePrice), ], aes(x = ExterMat, y = SalePrice)) +
+  geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
+  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
+cor(all$SalePrice[!is.na(all$SalePrice)], all$ExterMat[!is.na(all$SalePrice)])
