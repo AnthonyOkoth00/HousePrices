@@ -494,14 +494,14 @@ all$YrSold <- as.factor(all$YrSold) #the numeric version is now not needed anymo
 
 ###7.4 Binning Neighborhood
 nb1 <- ggplot(all[!is.na(all$SalePrice), ], aes(x = reorder(Neighborhood, SalePrice, FUN = median), y = SalePrice)) +
-  + geom_bar(stat = "summary", fun.y = "median", fill = "blue") + labs(x = "Neighborhood", y = "Median SalePrice") +
-  + theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_y_continuous(breaks = seq(0, 800000, by = 50000), labels = comma) +
-  + geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 3) +
-  + geom_hline(yintercept = 163000, linetype = "dashed", color = "red") #dashed line is the median SalePrice
-> nb2 <- ggplot(all[!is.na(all$SalePrice), ], aes(x = reorder(Neighborhood, SalePrice, FUN = mean), y = SalePrice)) +
-  + geom_bar(stat = "summary", fun.y = "mean", fill = "blue") + labs(x = "Neighborhood", y = "Mean SalePrice") +
-  + theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  + scale_y_continuous(breaks = seq(0, 800000, 50000), labels = comma) +
-  + geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 3) +
-  + geom_hline(yintercept = 163000, linetype = "dashed", color = "red") 
-> grid.arrange(nb1, nb2)
+  geom_bar(stat = "summary", fun.y = "median", fill = "blue") + labs(x = "Neighborhood", y = "Median SalePrice") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + scale_y_continuous(breaks = seq(0, 800000, by = 50000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 3) +
+  geom_hline(yintercept = 163000, linetype = "dashed", color = "red") #dashed line is the median SalePrice
+nb2 <- ggplot(all[!is.na(all$SalePrice), ], aes(x = reorder(Neighborhood, SalePrice, FUN = mean), y = SalePrice)) +
+  geom_bar(stat = "summary", fun.y = "mean", fill = "blue") + labs(x = "Neighborhood", y = "Mean SalePrice") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(breaks = seq(0, 800000, 50000), labels = comma) +
+  geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 3) +
+  geom_hline(yintercept = 163000, linetype = "dashed", color = "red") 
+grid.arrange(nb1, nb2)
