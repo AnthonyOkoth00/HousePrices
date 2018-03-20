@@ -505,3 +505,18 @@ nb2 <- ggplot(all[!is.na(all$SalePrice), ], aes(x = reorder(Neighborhood, SalePr
   geom_label(stat = "count", aes(label = ..count.., y = ..count..), size = 3) +
   geom_hline(yintercept = 163000, linetype = "dashed", color = "red") 
 grid.arrange(nb1, nb2)
+
+sum(table(all$NeighRich))
+###8 Preparing data for modeling
+#8.1 Deleting obsolete and ‘Near Zero Variance’ variables
+#'GrLivArea', 'TotalBsmtSF'
+#'X1stFlrSF', 'X2ndFlrSF', 'LowQualFinSF', 'BsmtFinSF1', 'BsmtFinSF2', 'BsmtUnfSF'
+dropVars <- c('YearBuilt', 'YearRemodAdd', 'FullBath', 'HalfBath', 'BsmtFullBath', 'BsmtHalfBath', 'OpenPorchSF', 'EnclosedPorch', 'X3SsnPorch', 'ScreenPorch', 'GarageYrBlt', 'GarageArea')
+all <- all[, !(names(all) %in% dropVars)]
+dim(all)
+nzvVars <- nearZeroVar(all, saveMetrics = TRUE)
+dropVars1 <- rownames(nzvVars)[nzvVars$nzv == TRUE]
+all <- all[, !names(all) %in% dropVars1]
+dim(all)
+## 8.2 Removing outliers
+all <- all[-c(524, 1299), ]
