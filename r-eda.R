@@ -8,6 +8,8 @@ library(gridExtra)
 library(scales)
 library(Rmisc)
 library(randomForest)
+library(e1071)
+
 train <- read.csv("./train.csv", stringsAsFactors = F)
 test <- read.csv("./test.csv", stringsAsFactors = F)
 dim(train)
@@ -26,6 +28,7 @@ ggplot(data = all[!is.na(all$SalePrice),], aes(x = SalePrice)) + geom_histogram(
 summary(all$SalePrice)
 
 numericVars <- which(sapply(all, is.numeric)) #index vector numeric variables
+numericVarNames <- names(numericVars) #saving names vector for use later on
 cat("There are ", length(numericVars), "numeric variables")
 
 all_numVar <- all[, numericVars]
@@ -472,11 +475,11 @@ por1 <- ggplot(data = all, aes(x = TotalPorchSF)) + geom_histogram() + labs(x = 
 por2 <- ggplot(data = all, aes(x = WoodDeckSF)) + geom_histogram() + labs(x = "Wood Deck square feet")
 grid.arrange(por1, por2, nrow = 1)
 ##7.3 Consolidating Quality and Condition of External Materials
-all$ExterMat <- all$ExterCond + all$ExterQual
-ggplot(data = all[!is.na(all$SalePrice), ], aes(x = ExterMat, y = SalePrice)) +
-  geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
-  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
-cor(all$SalePrice[!is.na(all$SalePrice)], all$ExterMat[!is.na(all$SalePrice)])
+#all$ExterMat <- all$ExterCond + all$ExterQual
+#ggplot(data = all[!is.na(all$SalePrice), ], aes(x = ExterMat, y = SalePrice)) +
+#  geom_point(col = "blue") + geom_smooth(method = "lm", se = FALSE, color = "black", aes(group = 1)) +
+#  scale_y_continuous(breaks = seq(0, 800000, by = 100000), labels = comma)
+#cor(all$SalePrice[!is.na(all$SalePrice)], all$ExterMat[!is.na(all$SalePrice)])
 ##7.4 Adding ‘House Age’ and ‘Remodeled (Yes/No)’ variables
 all$Remod <- ifelse(all$YearBuilt == all$YearRemodAdd, 0, 1) #0 = no remodelling, 1 = remodelling
 all$Age <- as.numeric(all$YrSold) - all$YearRemodAdd
@@ -506,6 +509,13 @@ nb2 <- ggplot(all[!is.na(all$SalePrice), ], aes(x = reorder(Neighborhood, SalePr
   geom_hline(yintercept = 163000, linetype = "dashed", color = "red") 
 grid.arrange(nb1, nb2)
 
+all$NeighRich[all$Neighborhood %in% c("StoneBr", "NridgHt", "NoRidge")] <- 1
+all$NeighRich[!all$Neighborhood %in% c("StoneBr", "NridgHt", "NoRidge")] <- 0
+
+table(all$NeighRich)
+sum(table(all$NeighRich))
+
+
 sum(table(all$NeighRich))
 ###8 Preparing data for modeling
 #8.1 Deleting obsolete and ‘Near Zero Variance’ variables
@@ -520,3 +530,82 @@ all <- all[, !names(all) %in% dropVars1]
 dim(all)
 ## 8.2 Removing outliers
 all <- all[-c(524, 1299), ]
+
+
+###8.3 PreProcessing predictor variables
+numericVarNames <- numericVarNames[!(numericVarNames %in% c("MSSubClass", "MoSold", "YrSold", "SalePrice", "OverallQual",
+                                                            "OverallCond"))] #numericVarNames was created before having done anything
+numericVarNames <- append(numericVarNames, c("Age", "TotalPorchSF", "TotBathrooms"))
+
+DFnumeric <- all[, names(all) %in% numericVarNames]
+names(DFnumeric)
+
+DFfactors <- all[, !(names(all) %in% numericVarNames)]
+DFfactors <- DFfactors[, names(DFfactors) != "SalePrice"]
+names(DFfactors)
+
+
+##8.3.1 Skewness and normalizing of the numeric predictors
+
+for (i in 1:ncol(DFnumeric)) {
+  if (abs(skew(DFnumeric[, i])) > 1) {
+    DFnumeric[, i] <- log(DFnumeric[, i] + 1)
+  }
+}
+
+#Nomalizing the data
+PreNum <- preProcess(DFnumeric, method = c("center", "scale"))
+print(PreNum)
+
+DFnorm <- predict(PreNum, DFnumeric)
+dim(DFnorm)
+
+##8.3.2 One hot encoding the categorical variables
+DFdummies <- as.data.frame(model.matrix(~.-1, DFfactors))
+dim(DFdummies)
+
+###8.4 Removing Near Zero Variance predictors that were ‘introduced’ by one-hot encoding
+combined <- cbind(DFnorm, DFdummies) #combining all (now numeric) predictors into one dataframe
+
+dim(combined)
+
+nzvVars1 <- nearZeroVar(combined, saveMetrics = TRUE)
+dropVars2 <- rownames(nzvVars1)[nzvVars1$nzv == TRUE]
+combined <- combined[, !names(combined) %in% dropVars2]
+dim(combined)
+
+###8.5 Dealing with skewness of response variable
+skewness(all$SalePrice)
+qqnorm(all$SalePrice)
+qqline(all$SalePrice)
+
+#Fix skewness of SalePrice
+all$SalePrice <- log(all$SalePrice) #default is the natural logarithm, "+1" is not necessary as there are no 0's
+skewness(all$SalePrice)
+
+
+qqnorm(all$SalePrice)
+qqline(all$SalePrice)
+
+###8.6 Composing train and test sets
+trainClean <- combined[1:1458, ] #2 outliers taken out of the training data
+testClean <- combined[1459:2917, ]
+
+###9 Modeling
+##9.1 Lasso regression model
+set.seed(2018)
+lasso_mod <- train(x = trainClean, y = all$SalePrice[!is.na(all$SalePrice)], method = "lasso",
+                   trControl = trainControl(method = "cv", number = 5))
+lasso_mod
+
+LassoPred <- predict(lasso_mod, testClean)
+predictions_lasso <- exp(LassoPred) #need to reverse the log to the real values
+head(predictions_lasso)
+
+#write submission file
+sub_lasso <- data.frame(Id = test_labels, SalePrice = predictions_lasso)
+write.csv(sub_lasso, file = "./Lasso_model.csv", row.names = F)
+
+
+
+

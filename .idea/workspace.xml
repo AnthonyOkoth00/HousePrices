@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="a38a347f-17e2-4ac8-a8c6-2dbb451caf07" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/Book1.xlsx" afterPath="" />
-    </list>
+    <list default="true" id="a38a347f-17e2-4ac8-a8c6-2dbb451caf07" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,8 +14,8 @@
       <file leaf-file-name="python-eda.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/python-eda.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="406">
-              <caret line="167" column="0" lean-forward="true" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
+            <state relative-caret-position="136">
+              <caret line="149" column="13" lean-forward="false" selection-start-line="149" selection-start-column="13" selection-end-line="149" selection-end-column="13" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -29,7 +27,7 @@
         <entry file="file://$PROJECT_DIR$/../../PyCharm/tigraphs.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="150">
-              <caret line="11" column="31" lean-forward="true" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
+              <caret line="11" column="31" lean-forward="false" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
               <folding />
             </state>
           </provider>
@@ -39,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/../../PyCharm/processing.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="450">
-              <caret line="30" column="0" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+              <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
@@ -68,10 +66,9 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="14" />
-    <option name="y" value="376" />
+    <option name="y" value="358" />
     <option name="width" value="1906" />
-    <option name="height" value="704" />
+    <option name="height" value="523" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -204,7 +201,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="14" y="376" width="1906" height="704" extended-state="0" />
+    <frame x="0" y="358" width="1906" height="523" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.100734524" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -237,7 +234,7 @@
     <entry file="file://$PROJECT_DIR$/../../PyCharm/tigraphs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
-          <caret line="11" column="31" lean-forward="true" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
+          <caret line="11" column="31" lean-forward="false" selection-start-line="11" selection-start-column="31" selection-end-line="11" selection-end-column="31" />
           <folding />
         </state>
       </provider>
@@ -245,7 +242,7 @@
     <entry file="file://$PROJECT_DIR$/../../PyCharm/processing.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="450">
-          <caret line="30" column="0" lean-forward="true" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+          <caret line="30" column="0" lean-forward="false" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
@@ -254,8 +251,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/python-eda.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="167" column="0" lean-forward="true" selection-start-line="167" selection-start-column="0" selection-end-line="167" selection-end-column="0" />
+        <state relative-caret-position="136">
+          <caret line="149" column="13" lean-forward="false" selection-start-line="149" selection-start-column="13" selection-end-line="149" selection-end-column="13" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
