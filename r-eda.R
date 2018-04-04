@@ -9,6 +9,8 @@ library(scales)
 library(Rmisc)
 library(randomForest)
 library(e1071)
+library(psych)
+library(xgboost)
 
 train <- read.csv("./train.csv", stringsAsFactors = F)
 test <- read.csv("./test.csv", stringsAsFactors = F)
@@ -590,6 +592,8 @@ qqline(all$SalePrice)
 ###8.6 Composing train and test sets
 trainClean <- combined[1:1458, ] #2 outliers taken out of the training data
 testClean <- combined[1459:2917, ]
+write.csv(trainClean, file = "./trainClean.csv", row.names = F)
+write.csv(testClean, file = "./testClean.csv", row.names = F)
 
 ###9 Modeling
 ##9.1 Lasso regression model
@@ -609,6 +613,31 @@ predictions_lasso <- exp(LassoPred) #need to reverse the log to the real values
 #write submission file
 sub_lasso <- data.frame(Id = test_labels, SalePrice = predictions_lasso)
 write.csv(sub_lasso, file = "./Lasso_model.csv", row.names = F)
+
+###9.2 XGBoost model
+label_train <- all$SalePrice[!is.na(all$SalePrice)]
+
+# put our testing & training data into two seperates Dmatrixs objects
+dtrain <- xgb.DMatrix(data = as.matrix(trainClean), label = label_train)
+dtest <- xgb.DMatrix(data = as.matrix(testClean))
+
+param <- list(objective = "reg:linear", eval_metric = "rmse", booster = "gbtree", eta = 0.1, gamma = 0, seed = 2018)
+xgb_mod <- xgb.train(data = dtrain, params = param, watchlist = list(train = dtrain), nrounds = 700, early.stopping.rounds = 10,
+                     verbose = 1, print_every_n = 100)
+
+xgbcv <- xgb.cv(params = param, data = dtrain, nrounds = 700, nfold = 5, showsd = T, stratified = T, print_every_n = 100,
+                early_stopping_rounds = 10, maximize = F)
+XGBpred <- predict(xgb_mod, dtest)
+predictions_XGB <- exp(XGBpred) #need to reverse the log to the real values
+head(predictions_XGB)
+
+#write submission files
+sub_xgb <- data.frame(Id = test_labels, SalePrice = predictions_XGB)
+write.csv(sub_xgb, file = "./XGB_model.csv", row.names = F)
+
+###9.3 Averaging predictions
+sub_avg <- data.frame(Id = test_labels, SalePrice = (predictions_XGB + predictions_lasso)/2)
+write.csv(sub_avg, file = "./average.csv", row.names = F)
 
 
 
